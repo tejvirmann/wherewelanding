@@ -53,3 +53,6 @@ activities:
   - `NEXT_PUBLIC_GOOGLE_MAPS_API_KEY` for the Madison map.
   - `NEXT_PUBLIC_FORGE_API_URL` reserved for future integrations.
 - Vercel settings are defined in `vercel.json`.
+- Security notes:
+  - Restrict the Google Maps API key to your Vercel domain(s) in GCP.
+  - Do not commit `.env` to GitHub; use `.env.example` for templates.

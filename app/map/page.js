@@ -54,9 +54,7 @@ export default function MapPage() {
   const [mapReady, setMapReady] = useState(false);
   const [theme, setTheme] = useState("light");
 
-  const apiKey =
-    process.env.NEXT_PUBLIC_GOOGLE_MAPS_API_KEY ||
-    "AIzaSyCH4Ib-ZN2WznaWZf453IZ2BQWEEpJcePE";
+  const apiKey = process.env.NEXT_PUBLIC_GOOGLE_MAPS_API_KEY;
 
   const getMapStyles = (mode) => {
     if (mode === "dark") {
