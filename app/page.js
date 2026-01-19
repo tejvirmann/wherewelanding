@@ -4,8 +4,13 @@ import SiteHeader from "./components/SiteHeader";
 const BattleBusScene = dynamic(() => import("./components/BattleBusScene"), {
   ssr: false,
   loading: () => (
-    <div className="bus-3d bus-3d--loading">Loading the Battle Bus...</div>
+    <div className="bus-hero bus-3d--loading">Loading the Battle Bus...</div>
   )
+});
+
+const MapPreview = dynamic(() => import("./components/MapPreview"), {
+  ssr: false,
+  loading: () => <div className="map-preview__loading">Loading map...</div>
 });
 
 export default function HomePage() {
@@ -13,16 +18,16 @@ export default function HomePage() {
     <div className="page">
       <SiteHeader active="home" />
 
-      <header className="hero">
-        <div>
-          <h1>Where are we landing?</h1>
+      <header className="hero hero--bus">
+        <div className="hero-copy">
+          <h1>where we landing?</h1>
           <p>
             A professional home for meetup drops. Coordinate where to cross
             paths, find community, and turn lonely nights into real-world hangs.
           </p>
           <div className="hero-actions">
-            <a className="btn-primary" href="/map">
-              Open the Madison map
+            <a className="btn-primary" href="/groups">
+              Explore groups
             </a>
             <a className="btn-secondary" href="#pilot">
               See the pilot group
@@ -38,31 +43,32 @@ export default function HomePage() {
         shared landing spot, show up, and see who else chose the same location.
       </section>
 
-      <section id="groups" className="section">
-        <h2>Groups</h2>
+      <section id="example" className="section">
+        <h2>Madison Software Meetup — Live Map</h2>
         <p>
-          Browse communities and choose a map that fits your schedule, location,
-          and vibe.
+          See where people are landing in real-time. Drop your pin and check who else is meeting up at the same spot.
         </p>
-        <div className="group-grid">
-          <div className="group-card">
-            <div className="group-header">
-              <h3>Madison Software Meetup</h3>
-              <span className="tag">Pilot group</span>
-            </div>
-            <p>
-              Weekly software meetups across downtown Madison. Pick a drop spot,
-              see who else is landing, and coordinate your arrival.
-            </p>
-            <a className="btn-secondary" href="/map">
-              Open map
-            </a>
+        <MapPreview />
+        <div className="map-stats">
+          <div className="map-stat-card">
+            <span className="map-stat-label">Active members</span>
+            <strong className="map-stat-value">18</strong>
+            <span className="map-stat-hint">Last 2 weeks</span>
           </div>
-          <div className="group-card muted">
-            <h3>More groups coming soon</h3>
-            <p>We are opening the next drop zones after the pilot launch.</p>
+          <div className="map-stat-card">
+            <span className="map-stat-label">Total landings</span>
+            <strong className="map-stat-value">47</strong>
+            <span className="map-stat-hint">All time</span>
+          </div>
+          <div className="map-stat-card">
+            <span className="map-stat-label">Most active zone</span>
+            <strong className="map-stat-value">Downtown</strong>
+            <span className="map-stat-hint">8 landings</span>
           </div>
         </div>
+        <a className="btn-primary" href="/map">
+          Open full map
+        </a>
       </section>
 
       <section id="pilot" className="section">
@@ -71,8 +77,8 @@ export default function HomePage() {
           The pilot group runs the first live map experience. Verified members
           can drop pins and see who else chose the same location.
         </p>
-        <a className="btn-primary" href="/map">
-          View the pilot map
+        <a className="btn-primary" href="/groups">
+          View the pilot group
         </a>
       </section>
 

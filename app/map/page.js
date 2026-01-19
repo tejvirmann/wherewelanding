@@ -208,7 +208,7 @@ export default function MapPage() {
 
   return (
     <div className="page">
-      <SiteHeader active="map" />
+      <SiteHeader active="groups" showLocationSwitcher />
 
       <section className="section">
         <h1>Madison Software Meetup Map</h1>

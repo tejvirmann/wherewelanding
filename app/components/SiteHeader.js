@@ -1,6 +1,10 @@
 import ThemeToggle from "./ThemeToggle";
 
-export default function SiteHeader({ active = "home", location = "Madison, WI" }) {
+export default function SiteHeader({
+  active = "home",
+  location = "Madison, WI",
+  showLocationSwitcher = false
+}) {
   return (
     <header className="topbar">
       <div className="logo">
@@ -8,7 +12,7 @@ export default function SiteHeader({ active = "home", location = "Madison, WI" }
           ✦
         </span>
         <div>
-          <p className="logo-title">Where are we landing?</p>
+          <p className="logo-title">where we landing?</p>
           <p className="logo-subtitle">Fortnite-inspired IRL meetups</p>
         </div>
       </div>
@@ -19,15 +23,18 @@ export default function SiteHeader({ active = "home", location = "Madison, WI" }
         <a className={active === "groups" ? "active" : ""} href="/groups">
           Groups
         </a>
-        <a className={active === "map" ? "active" : ""} href="/map">
-          Map
-        </a>
       </nav>
       <div className="topbar-actions">
-        <div className="location-pill">
-          {location}
-          <span className="location-dot" />
-        </div>
+        {showLocationSwitcher ? (
+          <label className="location-switcher">
+            <span>Location</span>
+            <select defaultValue={location}>
+              <option>Madison, WI</option>
+              <option>Chicago, IL</option>
+              <option>Milwaukee, WI</option>
+            </select>
+          </label>
+        ) : null}
         <ThemeToggle />
       </div>
     </header>

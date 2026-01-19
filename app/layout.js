@@ -8,7 +8,7 @@ const sora = Sora({
 });
 
 export const metadata = {
-  title: "Where We Landing",
+  title: "where we landing?",
   description: "Fortnite-inspired meetup drops for Madison, WI."
 };
 

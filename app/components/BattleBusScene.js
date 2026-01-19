@@ -8,33 +8,34 @@ function BattleBusModel() {
   return (
     <primitive
       object={scene}
-      scale={0.7}
-      position={[0, -0.7, 0]}
-      rotation={[0, Math.PI * 0.35, 0]}
+      scale={0.95}
+      position={[0, -1.4, 0]}
+      rotation={[0, Math.PI * 1.05, 0]}
     />
   );
 }
 
 export default function BattleBusScene() {
   return (
-    <div className="bus-3d">
+    <div className="bus-hero">
       <Canvas
-        camera={{ position: [0, 0, 6], fov: 32 }}
+        camera={{ position: [400, 467, 200], fov: 28 }}
         dpr={[1, 1.5]}
         gl={{ antialias: true, powerPreference: "high-performance" }}
       >
         <color attach="background" args={["#f5f6fb"]} />
-        <ambientLight intensity={0.6} />
-        <directionalLight position={[4, 6, 6]} intensity={1} />
-        <Float speed={1.2} rotationIntensity={0.5} floatIntensity={0.6}>
+        <ambientLight intensity={0.7} />
+        <directionalLight position={[6, 6, 6]} intensity={1.1} />
+        <Float speed={0.4} rotationIntensity={0.25} floatIntensity={0.15}>
           <BattleBusModel />
         </Float>
         <Environment preset="city" />
         <OrbitControls
-          enableZoom={false}
+          enableZoom
           enablePan={false}
+          target={[0, -0.6, 0]}
           autoRotate
-          autoRotateSpeed={0.8}
+          autoRotateSpeed={0.35}
         />
       </Canvas>
     </div>
