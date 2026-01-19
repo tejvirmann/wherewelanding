@@ -7,7 +7,7 @@ find communities and non-ephemeral friends.
 
 ### Project idea: Where We Landing
 A lightweight way for people to intersect in real life by choosing a shared
-spawn point near their routine.
+spawn point near their routine. The name is a Fortnite reference.
 
 - Set time. Set place. Set mission. Set identifier.
 - Example: "Go to the coffee shop at 6pm, wear something purple."
@@ -15,6 +15,17 @@ spawn point near their routine.
 - People are always moving; if groups agree to intersect at the same point,
   there is a higher chance of running into people and meeting.
 - Hosts can create regular meetups (e.g., community organizers).
+
+### Current focus (MVP)
+- Launch a fun, Fortnite-inspired front page with the Battle Bus vibe.
+- Start with a single map: a software meetup in Madison, WI.
+- Let verified users drop pins and see who else picked the same location.
+- Keep the map live so activity can change at any time.
+- Move the pilot map to its own page (`/map`).
+
+### Future ideas
+- Per-map AI that answers questions about group members and constraints.
+- Pin TTL (e.g., 2 weeks) so old drops expire automatically.
 
 ### Evidence from the community
 People keep asking where to meet, how to make friends, and how to find regular
@@ -35,3 +46,10 @@ activities:
 
 ### Notes
 - [wherewelanding.com](https://wherewelanding.com)
+
+### Deployment (Vercel)
+- Framework: Next.js (App Router).
+- Environment variables:
+  - `NEXT_PUBLIC_GOOGLE_MAPS_API_KEY` for the Madison map.
+  - `NEXT_PUBLIC_FORGE_API_URL` reserved for future integrations.
+- Vercel settings are defined in `vercel.json`.
