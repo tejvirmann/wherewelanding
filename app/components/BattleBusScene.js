@@ -31,7 +31,7 @@ export default function BattleBusScene() {
         </Float>
         <Environment preset="city" />
         <OrbitControls
-          enableZoom
+          enableZoom={false}
           enablePan={false}
           target={[0, -0.6, 0]}
           autoRotate

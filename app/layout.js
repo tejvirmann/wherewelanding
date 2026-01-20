@@ -1,21 +1,31 @@
 import "./globals.css";
-import { Sora } from "next/font/google";
-
-const sora = Sora({
-  subsets: ["latin"],
-  weight: ["300", "400", "500", "600", "700"],
-  display: "swap"
-});
+import { LocationProvider } from "./contexts/LocationContext";
 
 export const metadata = {
   title: "where we landing?",
-  description: "Fortnite-inspired meetup drops for Madison, WI."
+  description: "Find a squad. Connect with people and places on a recurring basis."
 };
 
 export default function RootLayout({ children }) {
   return (
-    <html lang="en" data-theme="light">
-      <body className={sora.className}>{children}</body>
+    <html lang="en">
+      <head>
+        <script
+          dangerouslySetInnerHTML={{
+            __html: `
+              (function() {
+                try {
+                  const theme = localStorage.getItem('wwl-theme') || 'light';
+                  document.documentElement.dataset.theme = theme;
+                } catch (e) {}
+              })();
+            `
+          }}
+        />
+      </head>
+      <body>
+        <LocationProvider>{children}</LocationProvider>
+      </body>
     </html>
   );
 }

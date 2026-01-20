@@ -1,6 +1,8 @@
 # wherewelanding
 A solution to the lack of third spaces and community in cities. A way for many people to coordinate where to cross paths. 
 
+https://222.place/
+
 ## Problem & project idea
 There are a lot of disconnected, lonely people in Madison, WI. It is not easy to
 find communities and non-ephemeral friends.

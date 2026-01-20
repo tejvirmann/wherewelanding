@@ -1,5 +1,8 @@
+"use client";
+
 import dynamic from "next/dynamic";
 import SiteHeader from "./components/SiteHeader";
+import { useLocation } from "./contexts/LocationContext";
 
 const BattleBusScene = dynamic(() => import("./components/BattleBusScene"), {
   ssr: false,
@@ -14,37 +17,38 @@ const MapPreview = dynamic(() => import("./components/MapPreview"), {
 });
 
 export default function HomePage() {
+  const { location } = useLocation();
   return (
     <div className="page">
       <SiteHeader active="home" />
 
-      <header className="hero hero--bus">
-        <div className="hero-copy">
-          <h1>where we landing?</h1>
-          <p>
-            A professional home for meetup drops. Coordinate where to cross
-            paths, find community, and turn lonely nights into real-world hangs.
-          </p>
-          <div className="hero-actions">
-            <a className="btn-primary" href="/groups">
-              Explore groups
+      <section className="community-board">
+        <div className="section">
+          <h2>community board — {location}</h2>
+          <p>Recent questions and discussions from the community.</p>
+          <div className="board-posts">
+            <a href="#" className="board-post">
+              <span className="board-post-title">Looking for a running partner downtown</span>
+              <span className="board-post-meta">2 hours ago</span>
             </a>
-            <a className="btn-secondary" href="#pilot">
-              See the pilot group
+            <a href="#" className="board-post">
+              <span className="board-post-title">Anyone interested in weekly coffee meetups?</span>
+              <span className="board-post-meta">5 hours ago</span>
+            </a>
+            <a href="#" className="board-post">
+              <span className="board-post-title">New to Madison, looking for friends</span>
+              <span className="board-post-meta">1 day ago</span>
             </a>
           </div>
         </div>
+      </section>
+
+      <header className="hero hero--bus">
         <BattleBusScene />
       </header>
 
-      <section id="mission" className="mission">
-        <strong>Point of the website:</strong> there are a lot of disconnected,
-        lonely people in Madison, WI. This makes it simple for groups to pick a
-        shared landing spot, show up, and see who else chose the same location.
-      </section>
-
-      <section id="example" className="section">
-        <h2>Madison Software Meetup — Live Map</h2>
+      <section id="community-map" className="section">
+        <h2>community map — {location}</h2>
         <p>
           See where people are landing in real-time. Drop your pin and check who else is meeting up at the same spot.
         </p>
@@ -66,24 +70,32 @@ export default function HomePage() {
             <span className="map-stat-hint">8 landings</span>
           </div>
         </div>
-        <a className="btn-primary" href="/map">
-          Open full map
+        <a className="btn-primary" href="#community-map">
+          Try it now
         </a>
       </section>
 
-      <section id="pilot" className="section">
-        <h2>Pilot group: Madison Software Meetup</h2>
-        <p>
-          The pilot group runs the first live map experience. Verified members
-          can drop pins and see who else chose the same location.
-        </p>
-        <a className="btn-primary" href="/groups">
-          View the pilot group
-        </a>
+      <section className="cta-section">
+        <div className="section">
+          <div className="cta-grid">
+            <button className="cta-card" type="button">
+              <h3>add to community board</h3>
+              <p>Share a question or start a discussion</p>
+            </button>
+            <button className="cta-card" type="button">
+              <h3>create squad</h3>
+              <p>Start a new group in your city</p>
+            </button>
+            <button className="cta-card" type="button">
+              <h3>join squad</h3>
+              <p>Sign into an existing group</p>
+            </button>
+          </div>
+        </div>
       </section>
 
       <footer className="footer">
-        Fortnite-inspired kickoff ritual, built for real-life Madison meetups.
+        © 2026 where we landing
       </footer>
     </div>
   );
