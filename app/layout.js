@@ -1,4 +1,5 @@
 import "./globals.css";
+import { LocationProvider } from "./contexts/LocationContext";
 
 export const metadata = {
   title: "where we landing?",
@@ -22,7 +23,9 @@ export default function RootLayout({ children }) {
           }}
         />
       </head>
-      <body>{children}</body>
+      <body>
+        <LocationProvider>{children}</LocationProvider>
+      </body>
     </html>
   );
 }

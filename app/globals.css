@@ -15,7 +15,7 @@
 
 [data-theme="dark"] {
   color-scheme: dark;
-  --bg: #0a1628;
+  --bg: #133d5f;
   --text: #e8f2f7;
   --muted: #7a99ac;
   --border: #1e3a52;
@@ -96,7 +96,92 @@ a {
 .topbar-actions {
   display: flex;
   align-items: center;
-  gap: 16px;
+  gap: 12px;
+}
+
+/* Location Selector */
+.location-selector {
+  position: relative;
+}
+
+.location-selector-btn {
+  border: 1px solid var(--border);
+  background: var(--bg);
+  color: var(--text);
+  padding: 8px 12px;
+  font-size: 14px;
+  font-family: inherit;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  transition: border-color 0.2s ease;
+  white-space: nowrap;
+}
+
+.location-selector-btn:hover {
+  border-color: var(--text);
+}
+
+.location-dropdown {
+  position: absolute;
+  right: 0;
+  top: calc(100% + 8px);
+  background: var(--bg);
+  border: 1px solid var(--border);
+  min-width: 240px;
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+  z-index: 200;
+}
+
+.location-search {
+  width: 100%;
+  padding: 12px;
+  font-size: 14px;
+  font-family: inherit;
+  color: var(--text);
+  background: var(--bg);
+  border: none;
+  border-bottom: 1px solid var(--border);
+  outline: none;
+}
+
+.location-list {
+  max-height: 300px;
+  overflow-y: auto;
+}
+
+.location-option {
+  width: 100%;
+  padding: 12px;
+  text-align: left;
+  background: none;
+  border: none;
+  color: var(--text);
+  font-size: 14px;
+  font-family: inherit;
+  cursor: pointer;
+  transition: background 0.2s ease;
+  border-bottom: 1px solid var(--border);
+}
+
+.location-option:hover {
+  background: rgba(0, 0, 0, 0.03);
+}
+
+[data-theme="dark"] .location-option:hover {
+  background: rgba(255, 255, 255, 0.05);
+}
+
+.location-option:last-child {
+  border-bottom: none;
+}
+
+.location-empty {
+  padding: 24px 12px;
+  text-align: center;
+  color: var(--muted);
+  font-size: 14px;
 }
 
 .theme-toggle {
@@ -726,6 +811,133 @@ a {
   font-size: 14px;
   padding: 8px 0;
   border-bottom: 1px solid var(--border);
+}
+
+/* Community Board */
+.community-board {
+  background: var(--bg);
+  border-bottom: 1px solid var(--border);
+}
+
+.board-posts {
+  display: flex;
+  flex-direction: column;
+  gap: 1px;
+  margin-top: 24px;
+  border: 1px solid var(--border);
+}
+
+.board-post {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 16px 20px;
+  background: var(--bg);
+  border-bottom: 1px solid var(--border);
+  transition: background 0.2s ease;
+}
+
+.board-post:hover {
+  background: rgba(0, 0, 0, 0.02);
+}
+
+[data-theme="dark"] .board-post:hover {
+  background: rgba(255, 255, 255, 0.03);
+}
+
+.board-post:last-child {
+  border-bottom: none;
+}
+
+.board-post-title {
+  font-size: 14px;
+  color: var(--text);
+}
+
+.board-post-meta {
+  font-size: 12px;
+  color: var(--muted);
+  white-space: nowrap;
+}
+
+/* How it Works */
+.how-to-steps {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+  gap: 48px;
+  margin: 48px 0;
+}
+
+.how-to-step {
+  text-align: center;
+}
+
+.how-to-number {
+  display: inline-block;
+  width: 40px;
+  height: 40px;
+  line-height: 40px;
+  border-radius: 50%;
+  background: var(--text);
+  color: var(--bg);
+  font-weight: 600;
+  font-size: 18px;
+  margin-bottom: 16px;
+}
+
+.how-to-step h3 {
+  font-size: 18px;
+  font-weight: 600;
+  margin: 16px 0 8px;
+}
+
+.how-to-step p {
+  font-size: 14px;
+  color: var(--muted);
+  line-height: 1.6;
+  margin: 0;
+}
+
+/* CTA Section */
+.cta-section {
+  background: var(--bg);
+  border-top: 1px solid var(--border);
+}
+
+.cta-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(240px, 1fr));
+  gap: 24px;
+  margin-top: 24px;
+}
+
+.cta-card {
+  padding: 32px 24px;
+  border: 1px solid var(--border);
+  background: var(--bg);
+  text-align: center;
+  cursor: pointer;
+  transition: all 0.2s ease;
+  font-family: inherit;
+}
+
+.cta-card:hover {
+  border-color: var(--text);
+  transform: translateY(-2px);
+}
+
+.cta-card h3 {
+  font-size: 18px;
+  font-weight: 600;
+  margin: 0 0 8px;
+  color: var(--text);
+}
+
+.cta-card p {
+  font-size: 14px;
+  color: var(--muted);
+  margin: 0;
+  line-height: 1.5;
 }
 
 /* Footer */

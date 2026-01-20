@@ -208,13 +208,13 @@ export default function MapPage() {
 
   return (
     <div className="page">
-      <SiteHeader active="groups" showLocationSwitcher />
+      <SiteHeader active="squads" />
 
       <section className="section">
-        <h1>Madison Software Meetup Map</h1>
+        <h1>Madison Software Squad Map</h1>
         <p>
-          Pick a landing spot for the software community. If many people click
-          the same location, you can see the list of who’s landing there. The
+          Pick a landing spot for the software squad. If many people click
+          the same location, you can see the list of who's landing there. The
           map is live and can change at any time.
         </p>
 

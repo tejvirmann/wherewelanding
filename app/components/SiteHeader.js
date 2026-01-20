@@ -1,9 +1,9 @@
-import ThemeToggle from "./ThemeToggle";
+"use client";
 
-export default function SiteHeader({
-  active = "home",
-  showLocationSwitcher = false
-}) {
+import ThemeToggle from "./ThemeToggle";
+import LocationSelector from "./LocationSelector";
+
+export default function SiteHeader({ active = "home" }) {
   return (
     <header className="topbar">
       <a href="/" className="logo-link">
@@ -16,8 +16,8 @@ export default function SiteHeader({
         <a className={active === "home" ? "active" : ""} href="/">
           home
         </a>
-        <a className={active === "groups" ? "active" : ""} href="/groups">
-          groups
+        <a className={active === "squads" ? "active" : ""} href="/squads">
+          squads
         </a>
         <a className={active === "mission" ? "active" : ""} href="/mission">
           mission
@@ -27,6 +27,7 @@ export default function SiteHeader({
         </a>
       </nav>
       <div className="topbar-actions">
+        <LocationSelector />
         <ThemeToggle />
       </div>
     </header>
