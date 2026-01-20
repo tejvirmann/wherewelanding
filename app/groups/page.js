@@ -59,6 +59,10 @@ export default function GroupsPage() {
           </div>
         </div>
       </section>
+
+      <footer className="footer">
+        © 2026 where we landing
+      </footer>
     </div>
   );
 }

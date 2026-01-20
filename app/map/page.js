@@ -288,6 +288,10 @@ export default function MapPage() {
           </div>
         </div>
       </section>
+
+      <footer className="footer">
+        © 2026 where we landing
+      </footer>
     </div>
   );
 }

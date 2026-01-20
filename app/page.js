@@ -19,28 +19,41 @@ export default function HomePage() {
       <SiteHeader active="home" />
 
       <header className="hero hero--bus">
-        <div className="hero-copy">
-          <h1>where we landing?</h1>
-          <p>
-            A professional home for meetup drops. Coordinate where to cross
-            paths, find community, and turn lonely nights into real-world hangs.
-          </p>
-          <div className="hero-actions">
-            <a className="btn-primary" href="/groups">
-              Explore groups
-            </a>
-            <a className="btn-secondary" href="#pilot">
-              See the pilot group
-            </a>
-          </div>
-        </div>
         <BattleBusScene />
       </header>
 
-      <section id="mission" className="mission">
-        <strong>Point of the website:</strong> there are a lot of disconnected,
-        lonely people in Madison, WI. This makes it simple for groups to pick a
-        shared landing spot, show up, and see who else chose the same location.
+      <section className="intro-section">
+        <h2>what is where we landing?</h2>
+        <p>
+          we're building a platform to help people form, deepen & maintain meaningful
+          connections through shared landing spots.
+        </p>
+        <p>
+          we won't tolerate an existence where loneliness is the default. where finding
+          community requires endless scrolling or algorithmic matching.
+        </p>
+        <p>
+          we're building to maximize in-real-life (IRL) meetups. at our core, we are
+          a connection company.
+        </p>
+        <div className="intro-callouts">
+          <p>this is <strong>not</strong> endless scrolling.</p>
+          <p>this is <strong>not</strong> random matching.</p>
+          <p>this is <strong>not</strong> another social network.</p>
+          <p>this is <strong>not</strong> a distraction.</p>
+        </div>
+        <p className="intro-cta-text">
+          where we landing is an opportunity to choose real connection.
+        </p>
+        <p className="intro-tagline">
+          no DMs, no scrolling, no swiping.
+        </p>
+        <p className="intro-tagline">
+          just say "yes" & explore the meetups you'd have never experienced.
+        </p>
+        <a className="link-minimal" href="/mission">
+          read our mission →
+        </a>
       </section>
 
       <section id="example" className="section">
@@ -83,7 +96,7 @@ export default function HomePage() {
       </section>
 
       <footer className="footer">
-        Fortnite-inspired kickoff ritual, built for real-life Madison meetups.
+        © 2026 where we landing
       </footer>
     </div>
   );
