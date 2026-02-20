@@ -7,6 +7,10 @@ export default function MissionPage() {
       url: "https://www.reddit.com/r/madisonwi/comments/1ox7yin/looking_for_friends/"
     },
     {
+      title: "On making friends in Madison",
+      url: "https://www.reddit.com/r/madisonwi/comments/1qofk2z/on_making_friends_in_madison/"
+    },
+    {
       title: "Looking for people to hang out with",
       url: "https://www.reddit.com/r/madisonwi/comments/1oypmhc/looking_for_people_to_hang_out_with/"
     },
@@ -45,6 +49,10 @@ export default function MissionPage() {
     {
       title: "Where do Black people hang out?",
       url: "https://www.reddit.com/r/madisonwi/comments/1q7t1wa/where_do_black_people_hang_out/"
+    },
+    {
+      title: "Need friends",
+      url: "https://www.reddit.com/r/madisonwi/comments/1ra3gv6/need_friends/"
     }
   ];
 
