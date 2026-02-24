@@ -53,6 +53,10 @@ export default function MissionPage() {
     {
       title: "Need friends",
       url: "https://www.reddit.com/r/madisonwi/comments/1ra3gv6/need_friends/"
+    },
+    {
+      title: "Where can I meet other nerdy people in town?",
+      url: "https://www.reddit.com/r/madisonwi/comments/1rctd2d/where_can_i_meet_other_nerdy_people_in_town/"
     }
   ];
 
