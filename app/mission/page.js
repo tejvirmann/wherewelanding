@@ -62,7 +62,7 @@ export default function MissionPage() {
 
   return (
     <div className="page">
-      <SiteHeader active="mission" />
+      <SiteHeader active="mission" showLocation={false} />
 
       <section className="mission-hero">
         <h1>our mission</h1>

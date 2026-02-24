@@ -1,21 +1,26 @@
 "use client";
 
 import { useState, useEffect, useRef } from "react";
+import { useRouter, usePathname } from "next/navigation";
 import { useLocation } from "../contexts/LocationContext";
 
 const CITIES = [
   "Madison, WI",
-  "Chicago, IL",
-  "Milwaukee, WI",
-  "Minneapolis, MN",
-  "Austin, TX"
+  "Milwaukee, WI"
 ];
+
+const CITY_SLUG = {
+  "Madison, WI": "madison-wi",
+  "Milwaukee, WI": "milwaukee-wi"
+};
 
 export default function LocationSelector() {
   const { location, updateLocation } = useLocation();
   const [searchTerm, setSearchTerm] = useState("");
   const [isOpen, setIsOpen] = useState(false);
   const dropdownRef = useRef(null);
+  const router = useRouter();
+  const pathname = usePathname();
 
   const filteredCities = CITIES.filter((city) =>
     city.toLowerCase().includes(searchTerm.toLowerCase())
@@ -23,6 +28,12 @@ export default function LocationSelector() {
 
   const handleSelect = (city) => {
     updateLocation(city);
+    const slug = CITY_SLUG[city] || "madison-wi";
+    if (pathname.startsWith("/board/")) {
+      router.push(`/board/${slug}`);
+    } else if (pathname.startsWith("/squads/")) {
+      router.push(`/squads/${slug}`);
+    }
     setSearchTerm("");
     setIsOpen(false);
   };
