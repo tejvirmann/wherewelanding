@@ -57,6 +57,22 @@ export default function MissionPage() {
     {
       title: "Where can I meet other nerdy people in town?",
       url: "https://www.reddit.com/r/madisonwi/comments/1rctd2d/where_can_i_meet_other_nerdy_people_in_town/"
+    },
+    {
+      title: "Another let's play music together post",
+      url: "https://www.reddit.com/r/madisonwi/comments/1rdj0f5/another_lets_play_music_together_post/"
+    },
+    {
+      title: "Coffee lovers group in Madison",
+      url: "https://www.reddit.com/r/madisonwi/comments/1rd1t7o/coffee_lovers_group_in_madison/"
+    },
+    {
+      title: "Looking to start/join a rock/alt band",
+      url: "https://www.reddit.com/r/madisonwi/comments/1rbthav/looking_to_startjoin_a_rockalt_band/"
+    },
+    {
+      title: "How do 50-somethings find friends in Madison?",
+      url: "https://www.reddit.com/r/madisonwi/comments/1reprt9/how_do_50somethings_find_friends_in_madison/"
     }
   ];
 
