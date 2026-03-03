@@ -2,21 +2,30 @@
 
 import ThemeToggle from "./ThemeToggle";
 import LocationSelector from "./LocationSelector";
+import { useLocation } from "../contexts/LocationContext";
 
-export default function SiteHeader({ active = "home" }) {
+const CITY_SLUG = {
+  "Madison, WI": "madison-wi",
+  "Milwaukee, WI": "milwaukee-wi"
+};
+
+export default function SiteHeader({ active = "home", showLocation = true }) {
+  const { location } = useLocation();
+  const citySlug = CITY_SLUG[location] || "madison-wi";
+
   return (
     <header className="topbar">
-      <a href="/" className="logo-link">
+      <div className="logo-link">
         <div className="logo-text">
-          <p className="logo-title">where we landing?</p>
-          <p className="logo-subtitle">Find a squad.</p>
+          <a href="/" className="logo-title">where we landing?</a>
+          <a href={`/squads/${citySlug}`} className="logo-subtitle">Find a squad.</a>
         </div>
-      </a>
+      </div>
       <nav className="nav-minimal">
         <a className={active === "home" ? "active" : ""} href="/">
           home
         </a>
-        <a className={active === "squads" ? "active" : ""} href="/squads">
+        <a className={active === "squads" ? "active" : ""} href={`/squads/${citySlug}`}>
           squads
         </a>
         <a className={active === "mission" ? "active" : ""} href="/mission">
@@ -27,7 +36,7 @@ export default function SiteHeader({ active = "home" }) {
         </a>
       </nav>
       <div className="topbar-actions">
-        <LocationSelector />
+        {showLocation && <LocationSelector />}
         <ThemeToggle />
       </div>
     </header>

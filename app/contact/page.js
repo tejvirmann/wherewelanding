@@ -28,7 +28,7 @@ export default function ContactPage() {
 
   return (
     <div className="page">
-      <SiteHeader active="contact" />
+      <SiteHeader active="contact" showLocation={false} />
 
       <section className="contact-section">
         <h1>contact us.</h1>
