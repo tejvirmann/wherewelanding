@@ -1,299 +1,186 @@
--- Where We Landing - Supabase Database Schema
--- This schema defines all tables needed for the application
+-- Where We Landing v2 Schema
+-- Run this in your Supabase SQL editor
 
--- Enable UUID extension
 CREATE EXTENSION IF NOT EXISTS "uuid-ossp";
 
--- ==============================================
--- USERS TABLE (extends Supabase auth.users)
--- ==============================================
-CREATE TABLE public.profiles (
-  id UUID REFERENCES auth.users(id) ON DELETE CASCADE PRIMARY KEY,
-  email TEXT UNIQUE NOT NULL,
-  display_name TEXT,
-  city TEXT,
-  zipcode TEXT,
-  created_at TIMESTAMPTZ DEFAULT NOW(),
-  updated_at TIMESTAMPTZ DEFAULT NOW()
-);
-
--- Enable Row Level Security
-ALTER TABLE public.profiles ENABLE ROW LEVEL SECURITY;
-
--- Policies for profiles
-CREATE POLICY "Users can view all profiles" 
-  ON public.profiles FOR SELECT 
-  USING (true);
-
-CREATE POLICY "Users can update own profile" 
-  ON public.profiles FOR UPDATE 
-  USING (auth.uid() = id);
-
--- ==============================================
--- SQUADS (formerly groups) TABLE
--- ==============================================
-CREATE TABLE public.squads (
+-- =====================
+-- APPLICANTS
+-- =====================
+CREATE TABLE public.applicants (
   id UUID DEFAULT uuid_generate_v4() PRIMARY KEY,
   name TEXT NOT NULL,
-  description TEXT,
-  city TEXT NOT NULL,
-  creator_id UUID REFERENCES public.profiles(id) ON DELETE SET NULL,
-  is_active BOOLEAN DEFAULT true,
-  member_count INTEGER DEFAULT 0,
-  active_member_count INTEGER DEFAULT 0, -- Members active in last 2 weeks
-  last_active_at TIMESTAMPTZ,
-  streak_days INTEGER DEFAULT 0,
-  created_at TIMESTAMPTZ DEFAULT NOW(),
-  updated_at TIMESTAMPTZ DEFAULT NOW()
+  email TEXT NOT NULL,
+  age INTEGER,
+  stage_of_life TEXT,
+  neighborhood TEXT,
+  travel_radius TEXT[],
+  goals TEXT,
+  friend_type TEXT[],
+  availability_days TEXT[],
+  availability_time TEXT[],
+  madison_proof TEXT,
+  status TEXT DEFAULT 'pending', -- pending | approved | rejected
+  applied_at TIMESTAMPTZ DEFAULT NOW()
 );
 
-ALTER TABLE public.squads ENABLE ROW LEVEL SECURITY;
-
-CREATE POLICY "Anyone can view active squads" 
-  ON public.squads FOR SELECT 
-  USING (is_active = true);
-
-CREATE POLICY "Authenticated users can create squads" 
-  ON public.squads FOR INSERT 
-  TO authenticated 
+ALTER TABLE public.applicants ENABLE ROW LEVEL SECURITY;
+-- Anon can insert (submit form), service role bypasses RLS for admin reads
+CREATE POLICY "Anyone can submit application"
+  ON public.applicants FOR INSERT
+  TO anon, authenticated
   WITH CHECK (true);
 
-CREATE POLICY "Squad creators can update their squads" 
-  ON public.squads FOR UPDATE 
-  USING (auth.uid() = creator_id);
+-- =====================
+-- PROFILES (approved users)
+-- =====================
+CREATE TABLE public.profiles (
+  id UUID REFERENCES auth.users(id) ON DELETE CASCADE PRIMARY KEY,
+  email TEXT,
+  name TEXT,
+  stage_of_life TEXT,
+  neighborhood TEXT,
+  travel_radius TEXT[],
+  goals TEXT,
+  friend_type TEXT[],
+  interests TEXT[],
+  availability_days TEXT[],
+  availability_time TEXT[],
+  role TEXT DEFAULT 'user', -- user | admin
+  status TEXT DEFAULT 'active', -- active | kicked | paused
+  strike_count INTEGER DEFAULT 0,
+  kicked_at TIMESTAMPTZ,
+  kick_reason TEXT,
+  joined_at TIMESTAMPTZ DEFAULT NOW()
+);
 
--- ==============================================
--- SQUAD MEMBERS (join table)
--- ==============================================
-CREATE TABLE public.squad_members (
+ALTER TABLE public.profiles ENABLE ROW LEVEL SECURITY;
+
+CREATE POLICY "Users can read all active profiles"
+  ON public.profiles FOR SELECT
+  TO authenticated
+  USING (status = 'active');
+
+CREATE POLICY "Users can update own profile"
+  ON public.profiles FOR UPDATE
+  TO authenticated
+  USING (auth.uid() = id);
+
+-- =====================
+-- KICKED PROFILES (archive)
+-- =====================
+CREATE TABLE public.kicked_profiles (
   id UUID DEFAULT uuid_generate_v4() PRIMARY KEY,
-  squad_id UUID REFERENCES public.squads(id) ON DELETE CASCADE NOT NULL,
-  user_id UUID REFERENCES public.profiles(id) ON DELETE CASCADE NOT NULL,
-  role TEXT DEFAULT 'member', -- 'creator', 'admin', 'member'
+  original_user_id UUID,
+  email TEXT,
+  name TEXT,
+  kick_reason TEXT,
+  strike_history JSONB,
+  kicked_at TIMESTAMPTZ DEFAULT NOW()
+);
+
+ALTER TABLE public.kicked_profiles ENABLE ROW LEVEL SECURITY;
+-- No direct client access; admin API uses service role key
+
+-- =====================
+-- GROUPS
+-- =====================
+CREATE TABLE public.groups (
+  id UUID DEFAULT uuid_generate_v4() PRIMARY KEY,
+  name TEXT,
+  status TEXT DEFAULT 'active', -- active | inactive | dissolved
+  email_thread_id TEXT,
+  admin_notes TEXT,
+  created_at TIMESTAMPTZ DEFAULT NOW(),
+  last_activity_at TIMESTAMPTZ DEFAULT NOW(),
+  dissolved_at TIMESTAMPTZ
+);
+
+ALTER TABLE public.groups ENABLE ROW LEVEL SECURITY;
+
+-- =====================
+-- GROUP MEMBERS
+-- =====================
+CREATE TABLE public.group_members (
+  id UUID DEFAULT uuid_generate_v4() PRIMARY KEY,
+  group_id UUID REFERENCES public.groups(id) ON DELETE CASCADE,
+  user_id UUID REFERENCES public.profiles(id) ON DELETE CASCADE,
   joined_at TIMESTAMPTZ DEFAULT NOW(),
-  last_active_at TIMESTAMPTZ DEFAULT NOW(),
-  UNIQUE(squad_id, user_id)
+  left_at TIMESTAMPTZ,
+  UNIQUE(group_id, user_id)
 );
 
-ALTER TABLE public.squad_members ENABLE ROW LEVEL SECURITY;
+ALTER TABLE public.group_members ENABLE ROW LEVEL SECURITY;
 
-CREATE POLICY "Anyone can view squad members" 
-  ON public.squad_members FOR SELECT 
-  USING (true);
+-- Policies that reference group_members added after both tables exist
+CREATE POLICY "Authenticated users can read their groups"
+  ON public.groups FOR SELECT
+  TO authenticated
+  USING (
+    id IN (SELECT group_id FROM public.group_members WHERE user_id = auth.uid())
+  );
 
-CREATE POLICY "Authenticated users can join squads" 
-  ON public.squad_members FOR INSERT 
-  TO authenticated 
-  WITH CHECK (auth.uid() = user_id);
+CREATE POLICY "Users can see members of their groups"
+  ON public.group_members FOR SELECT
+  TO authenticated
+  USING (
+    group_id IN (SELECT group_id FROM public.group_members WHERE user_id = auth.uid())
+  );
 
-CREATE POLICY "Users can leave squads" 
-  ON public.squad_members FOR DELETE 
-  USING (auth.uid() = user_id);
-
--- ==============================================
--- PINS (user landing locations)
--- ==============================================
-CREATE TABLE public.pins (
+-- =====================
+-- GROUP EVENTS (timeline log)
+-- =====================
+CREATE TABLE public.group_events (
   id UUID DEFAULT uuid_generate_v4() PRIMARY KEY,
-  squad_id UUID REFERENCES public.squads(id) ON DELETE CASCADE NOT NULL,
-  user_id UUID REFERENCES public.profiles(id) ON DELETE CASCADE NOT NULL,
-  latitude DECIMAL(10, 8) NOT NULL,
-  longitude DECIMAL(11, 8) NOT NULL,
-  location_name TEXT, -- e.g., "Starbucks Downtown"
-  meeting_time TIMESTAMPTZ, -- When they plan to be there
-  expires_at TIMESTAMPTZ NOT NULL, -- TTL - 2 weeks from creation
-  is_active BOOLEAN DEFAULT true,
-  notified_before_expiry BOOLEAN DEFAULT false,
-  created_at TIMESTAMPTZ DEFAULT NOW(),
-  updated_at TIMESTAMPTZ DEFAULT NOW()
-);
-
-ALTER TABLE public.pins ENABLE ROW LEVEL SECURITY;
-
-CREATE POLICY "Anyone can view active pins" 
-  ON public.pins FOR SELECT 
-  USING (is_active = true AND expires_at > NOW());
-
-CREATE POLICY "Authenticated users can create pins" 
-  ON public.pins FOR INSERT 
-  TO authenticated 
-  WITH CHECK (auth.uid() = user_id);
-
-CREATE POLICY "Users can update own pins" 
-  ON public.pins FOR UPDATE 
-  USING (auth.uid() = user_id);
-
-CREATE POLICY "Users can delete own pins" 
-  ON public.pins FOR DELETE 
-  USING (auth.uid() = user_id);
-
--- Index for geospatial queries
-CREATE INDEX idx_pins_location ON public.pins(latitude, longitude);
-CREATE INDEX idx_pins_expires_at ON public.pins(expires_at);
-CREATE INDEX idx_pins_squad_id ON public.pins(squad_id);
-
--- ==============================================
--- PIN RENEWALS (track when users renew/revive pins)
--- ==============================================
-CREATE TABLE public.pin_renewals (
-  id UUID DEFAULT uuid_generate_v4() PRIMARY KEY,
-  pin_id UUID REFERENCES public.pins(id) ON DELETE CASCADE NOT NULL,
-  user_id UUID REFERENCES public.profiles(id) ON DELETE CASCADE NOT NULL,
-  renewed_at TIMESTAMPTZ DEFAULT NOW()
-);
-
-ALTER TABLE public.pin_renewals ENABLE ROW LEVEL SECURITY;
-
-CREATE POLICY "Users can view own pin renewals" 
-  ON public.pin_renewals FOR SELECT 
-  USING (auth.uid() = user_id);
-
--- ==============================================
--- COMMUNITY BOARD POSTS
--- ==============================================
-CREATE TABLE public.board_posts (
-  id UUID DEFAULT uuid_generate_v4() PRIMARY KEY,
-  user_id UUID REFERENCES public.profiles(id) ON DELETE CASCADE NOT NULL,
-  city TEXT NOT NULL, -- Filter posts by city
-  title TEXT NOT NULL,
+  group_id UUID REFERENCES public.groups(id) ON DELETE CASCADE,
+  type TEXT NOT NULL, -- email_sent | check_in | admin_note | ai_message | member_left | dissolved
   content TEXT,
-  is_active BOOLEAN DEFAULT true,
-  view_count INTEGER DEFAULT 0,
-  created_at TIMESTAMPTZ DEFAULT NOW(),
-  updated_at TIMESTAMPTZ DEFAULT NOW()
+  actor TEXT, -- 'system' | 'ai' | 'admin' | user_id
+  created_at TIMESTAMPTZ DEFAULT NOW()
 );
 
-ALTER TABLE public.board_posts ENABLE ROW LEVEL SECURITY;
+ALTER TABLE public.group_events ENABLE ROW LEVEL SECURITY;
 
-CREATE POLICY "Anyone can view active board posts" 
-  ON public.board_posts FOR SELECT 
-  USING (is_active = true);
+CREATE POLICY "Users can read events for their groups"
+  ON public.group_events FOR SELECT
+  TO authenticated
+  USING (
+    group_id IN (SELECT group_id FROM public.group_members WHERE user_id = auth.uid())
+  );
 
-CREATE POLICY "Authenticated users can create posts" 
-  ON public.board_posts FOR INSERT 
-  TO authenticated 
-  WITH CHECK (auth.uid() = user_id);
-
-CREATE POLICY "Users can update own posts" 
-  ON public.board_posts FOR UPDATE 
-  USING (auth.uid() = user_id);
-
-CREATE POLICY "Users can delete own posts" 
-  ON public.board_posts FOR DELETE 
-  USING (auth.uid() = user_id);
-
--- Index for city filtering
-CREATE INDEX idx_board_posts_city ON public.board_posts(city);
-CREATE INDEX idx_board_posts_created_at ON public.board_posts(created_at DESC);
-
--- ==============================================
--- COMMUNITY MAP (aggregated view of all squads)
--- This is a VIEW, not a table - it combines data from all squads
--- ==============================================
-CREATE OR REPLACE VIEW public.community_map AS
-SELECT 
-  p.id AS pin_id,
-  p.squad_id,
-  s.name AS squad_name,
-  s.city,
-  p.user_id,
-  prof.display_name,
-  p.latitude,
-  p.longitude,
-  p.location_name,
-  p.meeting_time,
-  p.created_at,
-  p.expires_at
-FROM public.pins p
-JOIN public.squads s ON p.squad_id = s.id
-JOIN public.profiles prof ON p.user_id = prof.id
-WHERE p.is_active = true 
-  AND p.expires_at > NOW()
-  AND s.is_active = true
-ORDER BY p.created_at DESC;
-
--- ==============================================
--- FUNCTIONS
--- ==============================================
-
--- Function to update squad member counts
-CREATE OR REPLACE FUNCTION update_squad_counts()
+-- =====================
+-- AUTO-CREATE PROFILE ON SIGNUP
+-- =====================
+CREATE OR REPLACE FUNCTION public.handle_new_user()
 RETURNS TRIGGER AS $$
 BEGIN
-  -- Update total member count
-  UPDATE public.squads
-  SET member_count = (
-    SELECT COUNT(*) FROM public.squad_members WHERE squad_id = NEW.squad_id
-  )
-  WHERE id = NEW.squad_id;
-  
-  -- Update active member count (members with pins in last 2 weeks)
-  UPDATE public.squads
-  SET active_member_count = (
-    SELECT COUNT(DISTINCT user_id) 
-    FROM public.pins 
-    WHERE squad_id = NEW.squad_id 
-      AND created_at > NOW() - INTERVAL '2 weeks'
-      AND is_active = true
-  )
-  WHERE id = NEW.squad_id;
-  
+  INSERT INTO public.profiles (id, email, name)
+  VALUES (
+    NEW.id,
+    NEW.email,
+    COALESCE(NEW.raw_user_meta_data->>'full_name', split_part(NEW.email, '@', 1))
+  );
   RETURN NEW;
 END;
-$$ LANGUAGE plpgsql;
+$$ LANGUAGE plpgsql SECURITY DEFINER;
 
--- Trigger to update counts when squad members change
-CREATE TRIGGER update_squad_counts_trigger
-AFTER INSERT OR DELETE ON public.squad_members
-FOR EACH ROW
-EXECUTE FUNCTION update_squad_counts();
+CREATE TRIGGER on_auth_user_created
+  AFTER INSERT ON auth.users
+  FOR EACH ROW EXECUTE FUNCTION public.handle_new_user();
 
--- Function to expire old pins automatically
-CREATE OR REPLACE FUNCTION expire_old_pins()
-RETURNS void AS $$
-BEGIN
-  UPDATE public.pins
-  SET is_active = false
-  WHERE expires_at < NOW() AND is_active = true;
-END;
-$$ LANGUAGE plpgsql;
+-- =====================
+-- HELPER: increment strike count
+-- =====================
+CREATE OR REPLACE FUNCTION increment(x integer)
+RETURNS integer AS $$
+  SELECT x + 1;
+$$ LANGUAGE sql;
 
--- Function to calculate squad streaks
-CREATE OR REPLACE FUNCTION calculate_squad_streaks()
-RETURNS void AS $$
-BEGIN
-  -- Reset streaks for squads where most members' pins died
-  UPDATE public.squads s
-  SET streak_days = 0
-  WHERE (
-    SELECT COUNT(*) 
-    FROM public.pins p 
-    WHERE p.squad_id = s.id 
-      AND p.is_active = false 
-      AND p.expires_at > NOW() - INTERVAL '1 week'
-  ) > (s.member_count / 2);
-  
-  -- Increment streaks for active squads
-  UPDATE public.squads
-  SET streak_days = streak_days + 1
-  WHERE active_member_count > (member_count / 2);
-END;
-$$ LANGUAGE plpgsql;
-
--- ==============================================
--- SCHEDULED JOBS (using pg_cron or similar)
--- ==============================================
--- Note: These would be set up in Supabase dashboard or via pg_cron
--- Example:
--- SELECT cron.schedule('expire-pins', '0 * * * *', 'SELECT expire_old_pins()');
--- SELECT cron.schedule('update-streaks', '0 0 * * *', 'SELECT calculate_squad_streaks()');
-
--- ==============================================
--- INDEXES FOR PERFORMANCE
--- ==============================================
-CREATE INDEX idx_squad_members_user_id ON public.squad_members(user_id);
-CREATE INDEX idx_squad_members_squad_id ON public.squad_members(squad_id);
-CREATE INDEX idx_squads_city ON public.squads(city);
-CREATE INDEX idx_squads_is_active ON public.squads(is_active);
-CREATE INDEX idx_pins_user_id ON public.pins(user_id);
-CREATE INDEX idx_pins_is_active ON public.pins(is_active);
+-- =====================
+-- INDEXES
+-- =====================
+CREATE INDEX idx_applicants_status ON public.applicants(status);
+CREATE INDEX idx_profiles_status ON public.profiles(status);
+CREATE INDEX idx_profiles_neighborhood ON public.profiles(neighborhood);
+CREATE INDEX idx_group_members_user_id ON public.group_members(user_id);
+CREATE INDEX idx_group_members_group_id ON public.group_members(group_id);
+CREATE INDEX idx_group_events_group_id ON public.group_events(group_id);

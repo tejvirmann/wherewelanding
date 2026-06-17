@@ -1,55 +1,53 @@
-"use client";
-
-import dynamic from "next/dynamic";
+import { createClient } from "@/lib/supabase/server";
+import { createAdminClient } from "@/lib/supabase/admin";
 import SiteHeader from "./components/SiteHeader";
-import { useLocation } from "./contexts/LocationContext";
+import BusHero from "./components/BusHero";
+import dynamic from "next/dynamic";
 
-const BattleBusScene = dynamic(() => import("./components/BattleBusScene"), {
-  ssr: false,
-  loading: () => (
-    <div className="bus-hero bus-3d--loading">Loading the Battle Bus...</div>
-  )
-});
+const MiniMap = dynamic(() => import("./components/MiniMap"), { ssr: false });
 
-const CITY_SLUG = {
-  "Madison, WI": "madison-wi",
-  "Milwaukee, WI": "milwaukee-wi"
-};
+export default async function HomePage() {
+  const supabase = await createClient();
+  const admin = createAdminClient();
+  const { data: { user } } = await supabase.auth.getUser();
 
-export default function HomePage() {
-  const { location } = useLocation();
-  const citySlug = CITY_SLUG[location] || "madison-wi";
+  let role = null;
+  let appStatus = user ? "authed" : "guest";
+
+  // Heatmap points for mini map (always load)
+  const { data: heatmapData } = await admin
+    .from("applicants")
+    .select("home_lat, home_lng")
+    .eq("status", "approved")
+    .not("home_lat", "is", null);
+
+  const heatmapPoints = (heatmapData ?? [])
+    .filter(r => r.home_lat && r.home_lng)
+    .map(r => ({ lat: r.home_lat, lng: r.home_lng }));
+
+  if (user) {
+    const [{ data: profile }, { data: app }] = await Promise.all([
+      supabase.from("profiles").select("role").eq("id", user.id).single(),
+      admin.from("applicants").select("status")
+        .eq("email", user.email)
+        .order("applied_at", { ascending: false })
+        .limit(1)
+        .single()
+    ]);
+    role = profile?.role ?? null;
+    appStatus = app?.status ?? "authed";
+  }
 
   return (
     <div className="page">
-      <SiteHeader active="home" />
+      <SiteHeader user={user ? { role, appStatus } : null} />
+      <BusHero appStatus={appStatus} />
 
-      <section className="cta-section">
-        <div className="section">
-          <div className="cta-grid">
-            <a href={`/board/${citySlug}`} className="cta-card">
-              <h3>add to community board</h3>
-              <p>Share a question or start a discussion</p>
-            </a>
-            <a href={`/squads/${citySlug}`} className="cta-card">
-              <h3>create squad</h3>
-              <p>Start a new group in your city</p>
-            </a>
-            <a href={`/squads/${citySlug}`} className="cta-card">
-              <h3>join squad</h3>
-              <p>Sign into an existing group</p>
-            </a>
-          </div>
-        </div>
+      <section className="home-mini-map-section">
+        <MiniMap heatmapPoints={heatmapPoints} count={heatmapPoints.length} />
       </section>
 
-      <header className="hero hero--bus">
-        <BattleBusScene />
-      </header>
-
-      <footer className="footer">
-        © 2026 where we landing
-      </footer>
+      <footer className="footer">© 2026 where we landing</footer>
     </div>
   );
 }
