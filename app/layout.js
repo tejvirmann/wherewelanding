@@ -19,6 +19,7 @@ export default function RootLayout({ children }) {
   return (
     <html lang="en">
       <head>
+        <meta name="viewport" content="width=device-width, initial-scale=1" />
         <link rel="preload" href="/battle_bus_opt2.glb" as="fetch" crossOrigin="anonymous" />
       </head>
       <body>{children}</body>

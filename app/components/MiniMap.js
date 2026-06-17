@@ -13,7 +13,7 @@ export default function MiniMap({ heatmapPoints = [], count = 0 }) {
     const apiKey = process.env.NEXT_PUBLIC_GOOGLE_MAPS_KEY;
     if (!apiKey || !mapRef.current) return;
 
-    const loader = new Loader({ apiKey, version: "weekly", libraries: ["visualization", "maps"] });
+    const loader = new Loader({ apiKey, version: "weekly", libraries: [] });
 
     loader.load().then((google) => {
       const map = new google.maps.Map(mapRef.current, {
@@ -27,23 +27,26 @@ export default function MiniMap({ heatmapPoints = [], count = 0 }) {
         styles: MAP_STYLE
       });
 
-      if (heatmapPoints.length > 0) {
-        new google.maps.visualization.HeatmapLayer({
-          data: heatmapPoints.map(p => new google.maps.LatLng(p.lat, p.lng)),
+      heatmapPoints.forEach(p => {
+        new google.maps.Circle({
           map,
-          radius: 35,
-          opacity: 0.8,
-          gradient: [
-            "rgba(0,0,0,0)",
-            "rgba(65,105,225,0.5)",
-            "rgba(0,191,255,0.7)",
-            "rgba(0,255,150,0.8)",
-            "rgba(255,255,0,0.9)",
-            "rgba(255,100,0,1)",
-            "rgba(255,0,0,1)"
-          ]
+          center: { lat: p.lat, lng: p.lng },
+          radius: 1200,
+          fillColor: "#4A90D9",
+          fillOpacity: 0.08,
+          strokeWeight: 0,
+          clickable: false
         });
-      }
+        new google.maps.Circle({
+          map,
+          center: { lat: p.lat, lng: p.lng },
+          radius: 400,
+          fillColor: "#2563EB",
+          fillOpacity: 0.18,
+          strokeWeight: 0,
+          clickable: false
+        });
+      });
     });
   }, []);
 

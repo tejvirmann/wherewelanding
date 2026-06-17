@@ -302,9 +302,13 @@ export default function AdminClient({ applicants, groups, kicked }) {
                   </div>
                 )}
 
-                {/* Approved: strike / kick */}
+                {/* Approved: promote + strike / kick */}
                 {selected.status === "approved" && !strikeMode && (
                   <div className="admin-actions" style={{ marginTop: "24px", paddingTop: "24px", borderTop: "1px solid var(--border)" }}>
+                    <button className="btn-ghost" disabled={loading}
+                      onClick={() => callAction("/api/admin/promote", { email: selected.email })}>
+                      make admin
+                    </button>
                     <button className="btn-ghost" style={{ borderColor: "#c00", color: "#c00" }}
                       disabled={loading} onClick={() => setStrikeMode(true)}>
                       issue strike
