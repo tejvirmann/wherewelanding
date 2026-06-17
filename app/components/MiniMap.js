@@ -54,7 +54,9 @@ export default function MiniMap({ heatmapPoints = [], count = 0 }) {
     <div className="mini-map-wrap" onClick={() => router.push("/map")}>
       <div ref={mapRef} className="mini-map" />
       <div className="mini-map-overlay">
-        <span className="mini-map-count">{count > 0 ? `${count} people in the pool` : "madison, wi"}</span>
+        <span className="mini-map-count">
+          {count > 0 ? `${count} active ${count === 1 ? "friend" : "friends"} in madison` : "madison, wi"}
+        </span>
         <span className="mini-map-cta">view the map →</span>
       </div>
     </div>

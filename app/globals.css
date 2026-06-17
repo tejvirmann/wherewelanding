@@ -791,6 +791,12 @@ a {
   border-top: 1px solid var(--border);
 }
 
+.about-tagline {
+  font-size: 15px;
+  color: var(--muted);
+  margin: 0;
+}
+
 .about-section h2 {
   font-size: 22px;
   font-weight: 600;
@@ -1737,6 +1743,12 @@ a {
 .hero-sub {
   font-size: 16px;
   color: var(--muted);
+}
+
+.hero-tagline {
+  font-size: 13px;
+  color: var(--muted);
+  letter-spacing: 0.02em;
 }
 
 .bus-canvas-wrap {

@@ -20,13 +20,17 @@ export default function BusHero({ appStatus }) {
     ? "you're in the pool. we're finding your squad."
     : appStatus === "pending"
     ? "your application is under review."
-    : "friend matchmaking for madison, wi — find your squad.";
+    : "friend matchmaking for madison, wi — find your squad."
+  const tagline = appStatus === "approved" || appStatus === "pending"
+    ? null
+    : "no ai. real people do the matching.";
 
   return (
     <div className="bus-hero-section">
       <div className="bus-hero-text">
         <h1 className="hero-headline">where we landing?</h1>
         <p className="hero-sub">{sub}</p>
+        {tagline && <p className="hero-tagline">{tagline}</p>}
         <a href={cta.href} className="btn-primary">{cta.label}</a>
       </div>
       <div className="bus-canvas-wrap">
