@@ -1,5 +1,6 @@
 import SiteHeader from "../components/SiteHeader";
 import { createClient } from "@/lib/supabase/server";
+import { getAuthState } from "@/lib/getAuthState";
 
 const POSTS = [
   { title: "Looking for friends", url: "https://www.reddit.com/r/madisonwi/comments/1ox7yin/looking_for_friends/" },
@@ -34,18 +35,19 @@ const EXAMPLES = [
 export default async function AboutPage() {
   const supabase = await createClient();
   const { data: { user } } = await supabase.auth.getUser();
-  const { data: profile } = user
-    ? await supabase.from("profiles").select("role").eq("id", user.id).single()
-    : { data: null };
+  const authState = user ? await getAuthState(supabase, user.id, user.email) : null;
 
   return (
     <div className="page">
-      <SiteHeader active="about" user={user ? { role: profile?.role } : null} />
+      <SiteHeader active="about" user={authState} />
 
       <section className="about-hero">
         <h1>what is this?</h1>
         <p>
           where we landing is a friend matchmaking service for madison, wi.
+          find your squad.
+        </p>
+        <p>
           we form small groups of people around a shared thing they want to do —
           then we make the introduction and get out of the way.
         </p>

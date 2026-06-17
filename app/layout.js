@@ -5,7 +5,7 @@ export const metadata = {
     default: "where we landing?",
     template: "%s | where we landing?"
   },
-  description: "Friend matchmaking for Madison, WI. Apply to join the group.",
+  description: "Friend matchmaking for Madison, WI. Find your squad.",
   openGraph: {
     title: "where we landing?",
     description: "Friend matchmaking for Madison, WI.",

@@ -31,16 +31,23 @@ function toggle(arr, val) {
   return arr.includes(val) ? arr.filter(v => v !== val) : [...arr, val];
 }
 
-export default function ApplyForm({ name, email }) {
+export default function ApplyForm({ name, email, existing, isApproved }) {
   const [form, setForm] = useState({
-    age: "", stage: "", customStage: "",
-    location: null,
-    activities: [], customActivity: "",
-    goals: "",
-    days: [], daysDetail: "",
-    intro: "",
-    proofLink: "",
-    consent: false
+    age: existing?.age?.toString() ?? "",
+    stage: existing?.stage_of_life ?? "",
+    customStage: "",
+    location: (existing?.home_lat && existing?.home_lng)
+      ? { lat: existing.home_lat, lng: existing.home_lng, radiusKm: existing.travel_radius_km ?? 3 }
+      : null,
+    activities: existing?.friend_type ?? [],
+    customActivity: "",
+    goals: existing?.goals ?? "",
+    days: existing?.availability_days ?? [],
+    daysDetail: existing?.availability_detail ?? "",
+    intro: existing?.madison_proof ?? "",
+    proofLink: existing?.proof_link ?? "",
+    responsive: false,
+    consent: !!existing
   });
   const [showExamples, setShowExamples] = useState(false);
   const [submitting, setSubmitting] = useState(false);
@@ -58,6 +65,7 @@ export default function ApplyForm({ name, email }) {
     form.goals.trim().length > 15 &&
     form.days.length > 0 &&
     form.intro.trim().length > 30 &&
+    form.responsive &&
     form.consent;
 
   async function submit(e) {
@@ -74,6 +82,7 @@ export default function ApplyForm({ name, email }) {
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({
           name, email,
+          existingId: existing?.id ?? null,
           age: form.age,
           stage: effectiveStage,
           homeLat: form.location?.lat,
@@ -99,9 +108,18 @@ export default function ApplyForm({ name, email }) {
   if (done) {
     return (
       <div className="apply-done">
-        <h1>you&apos;re on the list.</h1>
-        <p>Real humans — not AI — are reading your application to make sure you&apos;re a good fit. We&apos;ll email you when your squad is ready.</p>
-        <p style={{ marginTop: "8px", fontSize: "13px", color: "var(--muted)" }}>usually within a week or two.</p>
+        {isApproved ? (
+          <>
+            <h1>saved.</h1>
+            <p>Your squad profile has been updated.</p>
+          </>
+        ) : (
+          <>
+            <h1>you&apos;re on the list.</h1>
+            <p>Real humans — not AI — are reading your application to make sure you&apos;re a good fit. We&apos;ll email you when your squad is ready.</p>
+            <p style={{ marginTop: "8px", fontSize: "13px", color: "var(--muted)" }}>usually within a week or two.</p>
+          </>
+        )}
         <a href="/" className="btn-ghost" style={{ marginTop: "28px", display: "inline-block" }}>back home</a>
       </div>
     );
@@ -229,6 +247,13 @@ export default function ApplyForm({ name, email }) {
           placeholder="https://instagram.com/yourhandle" />
       </div>
 
+      {/* Responsive acknowledgement */}
+      <label className="field-check">
+        <input type="checkbox" checked={form.responsive}
+          onChange={e => set("responsive", e.target.checked)} />
+        I&apos;ll respond to messages quickly — real people are coordinating this and your response time makes their job a lot easier.
+      </label>
+
       {/* Consent */}
       <label className="field-check">
         <input type="checkbox" checked={form.consent}
@@ -240,7 +265,7 @@ export default function ApplyForm({ name, email }) {
 
       <button className="btn-primary" type="submit"
         disabled={!canSubmit || submitting} style={{ marginTop: "8px" }}>
-        {submitting ? "submitting…" : "submit"}
+        {submitting ? "saving…" : isApproved ? "save changes" : existing ? "update application" : "submit"}
       </button>
     </form>
   );

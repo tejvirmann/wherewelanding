@@ -13,6 +13,16 @@ export default function SiteHeader({ active, user }) {
     router.refresh();
   }
 
+  const applyLabel = user?.appStatus === "approved"
+    ? "profile"
+    : user?.appStatus === "pending"
+    ? "application"
+    : "apply";
+
+  const applyHref = user?.appStatus === "approved"
+    ? "/profile"
+    : "/apply";
+
   return (
     <header className="topbar">
       <a href="/" className="logo-link">
@@ -24,6 +34,7 @@ export default function SiteHeader({ active, user }) {
 
       <nav className="nav-minimal">
         <a className={active === "about" ? "active" : ""} href="/about">about</a>
+        <a className={active === "contact" ? "active" : ""} href="/contact">contact</a>
         {user && <a className={active === "map" ? "active" : ""} href="/map">map</a>}
         {user?.role === "admin" && (
           <a className={active === "admin" ? "active" : ""} href="/admin">admin</a>
@@ -31,12 +42,14 @@ export default function SiteHeader({ active, user }) {
       </nav>
 
       <div className="topbar-actions">
-        <a href="/apply" className={`btn-ghost ${active === "apply" ? "btn-ghost--active" : ""}`}>apply</a>
+        <a
+          href={applyHref}
+          className={`btn-ghost ${(active === "apply" || active === "profile") ? "btn-ghost--active" : ""}`}
+        >
+          {applyLabel}
+        </a>
         {user ? (
-          <>
-            <a href="/profile" className={`btn-ghost ${active === "profile" ? "btn-ghost--active" : ""}`}>account</a>
-            <button className="btn-ghost" onClick={signOut}>sign out</button>
-          </>
+          <button className="btn-ghost" onClick={signOut}>sign out</button>
         ) : (
           <a href="/auth/signin" className="btn-ghost">sign in</a>
         )}
