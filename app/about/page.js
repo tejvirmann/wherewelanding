@@ -47,6 +47,7 @@ export default async function AboutPage() {
           where we landing is a friend matchmaking service for madison, wi.
           find your squad.
         </p>
+        <p className="about-tagline">no ai. real people do the matching.</p>
         <p>
           we form small groups of people around a shared thing they want to do —
           then we make the introduction and get out of the way.
@@ -84,7 +85,7 @@ export default async function AboutPage() {
             <span className="about-step-n">2</span>
             <div>
               <strong>we match you</strong>
-              <p>we find 2–5 people in madison with compatible goals, schedules, and areas. we do this manually — no algorithm.</p>
+              <p>real people — not an algorithm — read every application and hand-pick 2–5 people with compatible goals, schedules, and areas.</p>
             </div>
           </div>
           <div className="about-step">

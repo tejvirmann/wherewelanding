@@ -185,7 +185,7 @@ export default function MapClient({ heatmapPoints, profiles, isAuthed, isApprove
           <span className="map-count">
             {isApproved
               ? `${filtered.length} of ${profiles.length} ${profiles.length === 1 ? "person" : "people"}`
-              : `${heatmapPoints.length} in the pool`
+              : `${heatmapPoints.length} active ${heatmapPoints.length === 1 ? "friend" : "friends"} in madison`
             }
           </span>
           {isApproved && (
@@ -267,7 +267,7 @@ export default function MapClient({ heatmapPoints, profiles, isAuthed, isApprove
         <div className="map-overlay-hint">
           {!isAuthed ? (
             <div className="map-overlay-card">
-              <p>sign in to apply and see who&apos;s in the pool</p>
+              <p>sign in to see who&apos;s looking for their squad in madison</p>
               <a href="/auth/signin?next=/map" className="btn-primary">sign in with google</a>
             </div>
           ) : (
